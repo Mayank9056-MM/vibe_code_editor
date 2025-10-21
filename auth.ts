@@ -1,19 +1,24 @@
 import NextAuth from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
+
 import { db } from "./lib/db";
 import authConfig from "./auth.config";
-import { getUserById } from "./modules/auth/actions";
-// import { prisma } from "@/prisma"
+import { getAccountByUserId, getUserById } from "./modules/auth/actions";
 
-export const { handlers, auth, signIn, signOut } = NextAuth({
+export const { auth, handlers, signIn, signOut } = NextAuth({
   callbacks: {
-    async signIn({ user, account }) {
+    /**
+     * Handle user creation and account linking after a sucessful sign-in
+     */
+    async signIn({ user, account, profile }) {
       if (!user || !account) return false;
 
+      // check if user already exists
       const existingUser = await db.user.findUnique({
         where: { email: user.email! },
       });
 
+      // if user not exists create a new one
       if (!existingUser) {
         const newUser = await db.user.create({
           data: {
@@ -39,8 +44,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           },
         });
 
-        if (!newUser) return false;
+        if (!newUser) return false; // Returns false if user creation fails
       } else {
+        // Link the account if user exists
         const existingAccount = await db.account.findUnique({
           where: {
             provider_providerAccountId: {
@@ -50,6 +56,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           },
         });
 
+        // If the account does not exist, create it
         if (!existingAccount) {
           await db.account.create({
             data: {
@@ -72,11 +79,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
       return true;
     },
-    async jwt({ token }) {
+
+    async jwt({ token, user, account }) {
       if (!token.sub) return token;
 
       const existingUser = await getUserById(token.sub);
+
       if (!existingUser) return token;
+
+      const existingAccount = await getAccountByUserId(existingUser.id);
 
       token.name = existingUser.name;
       token.email = existingUser.email;
@@ -84,19 +95,23 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
       return token;
     },
+
     async session({ session, token }) {
+      // Attach the user ID from the token to the session
       if (token.sub && session.user) {
         session.user.id = token.sub;
       }
 
-      if (token.sib && session.user) {
+      if (token.sub && session.user) {
         session.user.role = token.role;
       }
 
       return session;
     },
   },
+
   secret: process.env.AUTH_SECRET,
   adapter: PrismaAdapter(db),
+  session: { strategy: "jwt" },
   ...authConfig,
 });

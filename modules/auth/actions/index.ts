@@ -1,6 +1,6 @@
 "use server";
 
-import { auth } from "@/auth";
+import { auth, signIn } from "@/auth";
 import { db } from "@/lib/db";
 
 export const getUserById = async (id: string) => {
@@ -38,3 +38,11 @@ export const currentUser = async () => {
   const user = await auth();
   return user?.user;
 };
+
+export async function handleGoogleSignIn() {
+  await signIn("google");
+}
+
+export async function handleGithubSignIn() {
+  await signIn("github");
+}
