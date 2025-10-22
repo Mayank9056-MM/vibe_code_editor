@@ -53,6 +53,7 @@ import {
   Eye,
 } from "lucide-react";
 import { toast } from "sonner";
+import { deleteProjectById } from "../actions";
 
 interface ProjectTableProps {
   projects: Project[];
@@ -88,15 +89,35 @@ export default function ProjectTable({
   const [favoutrie, setFavourite] = useState(false);
 
   const handleEditClick = (project: Project) => {
-    //    Write your logic here
+    setSelectedProject(project);
+    setEditData({
+      title: project.title,
+      description: project.description || "",
+    });
+    setEditDialogOpen(true);
   };
 
   const handleDeleteClick = async (project: Project) => {
-    //    Write your logic here
+    setSelectedProject(project);
+
+    setDeleteDialogOpen(true);
   };
 
   const handleUpdateProject = async () => {
-    //    Write your logic here
+    if (!selectedProject || !onUpdateProject) return;
+
+    setIsLoading(true);
+
+    try {
+      await onUpdateProject(selectedProject.id, editData);
+      setEditDialogOpen(false);
+      toast.success("Project upadated successfully");
+    } catch (error) {
+      toast.error("Failed to update project");
+      console.error("Error updating project", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleMarkasFavorite = async (project: Project) => {
@@ -104,15 +125,45 @@ export default function ProjectTable({
   };
 
   const handleDeleteProject = async () => {
-    //    Write your logic here
+    if (!selectedProject || !onUpdateProject) return;
+
+    setIsLoading(true);
+
+    try {
+      await deleteProjectById(selectedProject.id);
+      setDeleteDialogOpen(false);
+      setSelectedProject(null);
+      toast.success("Project deleted successfully");
+    } catch (error) {
+      toast.error("Failed to delete project");
+      console.error("Error deleting project", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleDuplicateProject = async (project: Project) => {
-    //    Write your logic here
+    if (!onDuplicateProject) return;
+
+    setIsLoading(true);
+
+    try {
+      await onDuplicateProject(project.id);
+      toast.success("Project dublicated successfully");
+    } catch (error) {
+      toast.error("Failed to dublicate project");
+      console.error("Error dublicating project", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const copyProjectUrl = (projectId: string) => {
-    //    Write your logic here
+    const url = `${window.location.origin}/playground/${projectId}`;
+
+    navigator.clipboard.writeText(url);
+
+    toast.success("Project url copied successfully to clipboard");
   };
 
   return (
@@ -133,7 +184,10 @@ export default function ProjectTable({
               <TableRow key={project.id}>
                 <TableCell className="font-medium">
                   <div className="flex flex-col">
-                    <Link href={`playground/${project.id}`} className="hover:underline">
+                    <Link
+                      href={`playground/${project.id}`}
+                      className="hover:underline"
+                    >
                       <span className="font-semibold">{project.title}</span>
                     </Link>
                     <span className="text-sm text-gray-500 line-clamp-1">
@@ -182,7 +236,10 @@ export default function ProjectTable({
                         /> */}
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link href={`playground/${project.id}`} className="flex items-center">
+                        <Link
+                          href={`playground/${project.id}`}
+                          className="flex items-center"
+                        >
                           <Eye className="h-4 w-4 mr-2" />
                           Open Project
                         </Link>
