@@ -2,8 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import type { TemplateFolder } from "../lib/path-to-json";
-import { getPlaygroundById } from "../actions";
-import { SaveUpdatedCode } from "@/app/api/template/[id]/route";
+import { getPlaygroundById, SaveUpdatedCode } from "../actions";
 
 interface playgroundData {
   id: string;
@@ -48,7 +47,9 @@ export const usePlayground = (id: string): UsePlaygroundRetrun => {
         return;
       }
 
-      const res = await fetch(`api/template/${id}`);
+      const res = await fetch(`/api/template/${id}`);
+
+      console.log("res", res);
 
       if (!res.ok) throw new Error(`Failed to laod template: ${res.status}`);
 
@@ -59,9 +60,16 @@ export const usePlayground = (id: string): UsePlaygroundRetrun => {
           folderName: "Root",
           items: templateRes.templateJson || {
             foldername: "Root",
-            items: [],
+            items: templateRes.templateJson,
           },
         });
+      } else {
+        setTemplateData(
+          templateRes.templateJson || {
+            folderName: "Root",
+            items: [],
+          }
+        );
       }
 
       toast.success("Template loaded successfully");

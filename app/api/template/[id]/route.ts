@@ -3,12 +3,10 @@ import { templatePaths } from "@/lib/template";
 import {
   readTemplateStructureFromJson,
   saveTemplateStructureToJson,
-  TemplateFolder,
 } from "@/modules/playground/lib/path-to-json";
 import path from "path";
 import fs from "fs/promises";
 import { NextRequest } from "next/server";
-import { currentUser } from "@/modules/auth/actions";
 
 function validateJsonStructure(data: unknown): boolean {
   try {
@@ -49,6 +47,9 @@ export async function GET(
     const inputPath = path.join(process.cwd(), templatePath);
     const outputFile = path.join(process.cwd(), `output/${templateKey}.json`);
 
+    console.log("Input Path:", inputPath);
+    console.log("Output Path:", outputFile);
+
     await saveTemplateStructureToJson(inputPath, outputFile);
     const result = await readTemplateStructureFromJson(outputFile);
 
@@ -73,32 +74,3 @@ export async function GET(
     );
   }
 }
-
-export const SaveUpdatedCode = async (
-  playgroundId: string,
-  data: TemplateFolder
-) => {
-  const user = await currentUser();
-
-  if (!user) return null;
-
-  try {
-    const updatedPlaygroundd = await db.templateFile.upsert({
-      where: {
-        playgroundId,
-      },
-      update: {
-        content: JSON.stringify(data),
-      },
-      create: {
-        playgroundId,
-        content: JSON.stringify(data),
-      },
-    });
-
-    return updatedPlaygroundd;
-  } catch (error) {
-    console.log("SaveUpdatedCode error:", error);
-    return null;
-  }
-};
