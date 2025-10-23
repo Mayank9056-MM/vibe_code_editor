@@ -1,6 +1,8 @@
 "use server";
 
 import { db } from "@/lib/db";
+import { currentUser } from "@/modules/auth/actions";
+import { TemplateFolder } from "../lib/path-to-json";
 
 export const getPlaygroundById = async (id: string) => {
   try {
@@ -9,6 +11,7 @@ export const getPlaygroundById = async (id: string) => {
         id,
       },
       select: {
+        title: true,
         templateFiles: {
           select: {
             content: true,
@@ -20,5 +23,34 @@ export const getPlaygroundById = async (id: string) => {
     return playground;
   } catch (error) {
     console.log("Error : getPlaygroundById", error);
+  }
+};
+
+export const SaveUpdatedCode = async (
+  playgroundId: string,
+  data: TemplateFolder
+) => {
+  const user = await currentUser();
+
+  if (!user) return null;
+
+  try {
+    const updatedPlaygroundd = await db.templateFile.upsert({
+      where: {
+        playgroundId,
+      },
+      update: {
+        content: JSON.stringify(data),
+      },
+      create: {
+        playgroundId,
+        content: JSON.stringify(data),
+      },
+    });
+
+    return updatedPlaygroundd;
+  } catch (error) {
+    console.log("SaveUpdatedCode error:", error);
+    return null;
   }
 };
