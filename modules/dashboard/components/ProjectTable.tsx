@@ -126,12 +126,12 @@ export default function ProjectTable({
   };
 
   const handleDeleteProject = async () => {
-    if (!selectedProject || !onUpdateProject) return;
+    if (!selectedProject || !onDeleteProject) return;
 
     setIsLoading(true);
 
     try {
-      await deleteProjectById(selectedProject.id);
+      await onDeleteProject(selectedProject.id);
       setDeleteDialogOpen(false);
       setSelectedProject(null);
       toast.success("Project deleted successfully");
