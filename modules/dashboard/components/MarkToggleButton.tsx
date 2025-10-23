@@ -29,7 +29,10 @@ export const MarkedToggleButton = forwardRef<HTMLButtonElement, MarkedToggleButt
 
       try {
         const res = await toggleStarMarked(id, newMarkedState)
+
+        console.log(res)
         const {success ,error , isMarked} = res;
+
 
     //    if ismarked true then show marked successfully otherwise show start over
         if (isMarked && !error && success) {

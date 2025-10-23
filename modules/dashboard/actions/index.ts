@@ -32,10 +32,9 @@ export const toggleStarMarked = async (
           },
         },
       });
-
-       revalidatePath("/dashboard");
-    return { success: true, isMarked: isChecked };
     }
+    revalidatePath("/dashboard");
+    return { success: true, isMarked: isChecked };
   } catch (error) {
     console.error("Error updating problem", error);
     return {
