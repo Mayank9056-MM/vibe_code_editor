@@ -8,7 +8,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable";
 import { Separator } from "@/components/ui/separator";
 import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -23,6 +27,8 @@ import PlaygroundEditor from "@/modules/playground/components/PlaygroundEditor";
 import { useFileExplorer } from "@/modules/playground/hooks/useFileExplorer";
 import { usePlayground } from "@/modules/playground/hooks/usePlayground";
 import { TemplateFile } from "@/modules/playground/lib/path-to-json";
+import WebcontainerPreview from "@/modules/webcontainers/components/WebcontainerPreview";
+import { useWebContainer } from "@/modules/webcontainers/hooks/useWebcontainer";
 import { Bot, FileText, Save, Settings, X } from "lucide-react";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -45,6 +51,14 @@ const MainPlaygroundPage = () => {
     openFile,
     openFiles,
   } = useFileExplorer();
+
+  const {
+    serverUrl,
+    isLoading: containerLoading,
+    error: containerError,
+    instance,
+    writeFileSync,
+  } = useWebContainer({ templateData });
 
   useEffect(() => {
     setPlaygroundId(id);
@@ -96,7 +110,7 @@ const MainPlaygroundPage = () => {
 
               <div className="flex items-center gap-1">
                 <Tooltip>
-                  <TooltipTrigger>
+                  <TooltipTrigger asChild>
                     <Button
                       size="sm"
                       variant="outline"
@@ -212,6 +226,23 @@ const MainPlaygroundPage = () => {
                         content={activeFile?.content || ""}
                         onContentChange={() => {}}
                       />
+
+                      {isPreviewVisible && (
+                        <>
+                          <ResizableHandle />
+                          <ResizablePanel defaultSize={50}>
+                            <WebcontainerPreview
+                              templateData={templateData}
+                              instance={instance}
+                              writeFileSync={writeFileSync}
+                              isLoading={containerLoading}
+                              error={containerError}
+                              serverUrl={serverUrl}
+                              forceResetup={false}
+                            />
+                          </ResizablePanel>
+                        </>
+                      )}
                     </ResizablePanel>
                   </ResizablePanelGroup>
                 </div>
