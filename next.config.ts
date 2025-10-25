@@ -16,7 +16,7 @@ const nextConfig: NextConfig = {
     return [
       {
         // Apply to all routes
-        source: "/:path",
+        source: "/(.*)",
         headers: [
           {
             key: "Cross-Origin-Opener-Policy",
