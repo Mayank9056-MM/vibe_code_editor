@@ -1,10 +1,11 @@
 "use client";
 import { TemplateFolder } from "@/modules/playground/lib/path-to-json";
 import { WebContainer } from "@webcontainer/api";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { transformToWebContainerFormat } from "../hooks/transformer";
 import { CheckCircle, Loader2, XCircle } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
+import TerminalComponent from "./terminal";
 
 interface WebContainerPreviewProps {
   templateData: TemplateFolder;
@@ -40,6 +41,26 @@ const WebcontainerPreview = ({
   const [isSetupComplete, setIsSetupComplete] = useState(false);
   const [isSetupInProgress, setIsSetupInProgress] = useState(false);
 
+  const terminalRef = useRef<any>(null);
+
+  // Reset setup state when forceResetup changes
+
+  useEffect(() => {
+    if (forceResetup) {
+      setIsSetupComplete(false);
+      setIsSetupInProgress(false);
+      setPreviewUrl("");
+      setCurrentStep(0);
+      setLoadingState({
+        transforming: false,
+        mounting: false,
+        installing: false,
+        starting: false,
+        ready: false,
+      });
+    }
+  }, [forceResetup]);
+
   useEffect(() => {
     async function setupContainer() {
       if (!instance || isSetupComplete || isSetupInProgress) return;
@@ -55,10 +76,20 @@ const WebcontainerPreview = ({
           );
 
           if (packageJsonExists) {
-            // TODO: IMPLEMENT TERMINAL LOGIC HERE
+            // Files are already mounted, just reconnect to existing serer
+
+            if (terminalRef.current?.writeToTerminal) {
+              terminalRef.current.writeToTerminal(
+                "Reconnecting to existing server...\r\n"
+              );
+            }
 
             instance.on("server-ready", (port: number, url: string) => {
-              // TODO: TERMINAL
+              if (terminalRef.current?.writeToTerminal) {
+                terminalRef.current.writeToTerminal(
+                  `Reconnected to server at ${url}\r\n`
+                );
+              }
 
               setPreviewUrl(url);
               setLoadingState((prev) => ({
@@ -84,7 +115,13 @@ const WebcontainerPreview = ({
         }));
         setCurrentStep(1);
 
-        // TODO: TERMINAL LOGIC
+        // Write to terminal
+        if (terminalRef.current?.writeToTerminal) {
+          terminalRef.current.writeToTerminal(
+            "Transforming template data...\r\n"
+          );
+        }
+
         // @ts-ignore
         const files = transformToWebContainerFormat(templateData);
         setLoadingState((prev) => ({
@@ -96,11 +133,17 @@ const WebcontainerPreview = ({
 
         // Step-2 Mounting the files
 
-        //TODO: TERMINAL LOGIC
+        if (terminalRef.current?.writeToTerminal) {
+          terminalRef.current.writeToTerminal(
+            "Mounting files to webcontainer...\r\n"
+          );
+        }
 
         await instance.mount(files);
 
-        // TODO: TERMINAL LOGIC
+        if (terminalRef.current?.writeToTerminal) {
+          terminalRef.current.writeToTerminal("Files mounted successfully\r\n");
+        }
 
         setLoadingState((prev) => ({
           ...prev,
@@ -111,14 +154,18 @@ const WebcontainerPreview = ({
 
         // STEP - 3 Install dependencies
 
-        // TODO: TERMINAL LOGIC
+        if (terminalRef.current?.writeToTerminal) {
+          terminalRef.current.writeToTerminal("Installing dependencies...\r\n");
+        }
 
         const installProcess = await instance.spawn("npm", ["install"]);
 
         installProcess.output.pipeTo(
           new WritableStream({
             write(data) {
-              // TODO: TERMINAL LOGIC
+              if (terminalRef.current?.writeToTerminal) {
+                terminalRef.current.writeToTerminal(data);
+              }
             },
           })
         );
@@ -131,7 +178,11 @@ const WebcontainerPreview = ({
           );
         }
 
-        // TODO: TERMINAL LOGIC
+        if (terminalRef.current?.writeToTerminal) {
+          terminalRef.current.writeToTerminal(
+            "Dependencies installed successfully\r\n"
+          );
+        }
 
         setLoadingState((prev) => ({
           ...prev,
@@ -142,12 +193,20 @@ const WebcontainerPreview = ({
 
         // STEP-4 Start the server
 
-        //TODO: Terminal logic
+        if (terminalRef.current?.writeToTerminal) {
+          terminalRef.current.writeToTerminal(
+            "Starting development server...\r\n"
+          );
+        }
 
         const startProcess = await instance.spawn("npm", ["run", "start"]);
 
         instance.on("server-ready", (port: number, url: string) => {
-          //TODO: Terminal logic
+          if (terminalRef.current?.writeToTerminal) {
+            terminalRef.current.writeToTerminal(
+              `Server is running at ${url}\r\n`
+            );
+          }
           setPreviewUrl(url);
           setLoadingState((prev) => ({
             ...prev,
@@ -162,10 +221,9 @@ const WebcontainerPreview = ({
         startProcess.output.pipeTo(
           new WritableStream({
             write(data) {
-              //TODO: Terminal implementation
-              // if(terminalRef.current?.writeToTerminal){
-              //   terminalRef.current.writeToTerminal(data);
-              // }
+              if (terminalRef.current?.writeToTerminal) {
+                terminalRef.current.writeToTerminal(data);
+              }
             },
           })
         );
@@ -173,7 +231,11 @@ const WebcontainerPreview = ({
         console.error("Error setting up container", error);
         const errorMessage =
           error instanceof Error ? error.message : String(error);
-        // TODO: TERMINAL LOGIC FOR ERROR
+        if (terminalRef.current?.writeToTerminal) {
+          terminalRef.current.writeToTerminal(
+            `Error during setup: ${errorMessage}\r\n`
+          );
+        }
         setSetupError(errorMessage);
         setIsSetupInProgress(false);
         setLoadingState({
@@ -285,12 +347,12 @@ const WebcontainerPreview = ({
 
           {/* Terminal */}
           <div className="flex-1 p-4">
-            {/* <TerminalComponent 
+            <TerminalComponent
               ref={terminalRef}
               webContainerInstance={instance}
               theme="dark"
               className="h-full"
-            /> */}
+            />
           </div>
         </div>
       ) : (
@@ -306,12 +368,12 @@ const WebcontainerPreview = ({
 
           {/* Terminal at bottom when preview is ready */}
           <div className="h-64 border-t">
-            {/* <TerminalComponent 
+            <TerminalComponent
               ref={terminalRef}
               webContainerInstance={instance}
               theme="dark"
               className="h-full"
-            /> */}
+            />
           </div>
         </div>
       )}
