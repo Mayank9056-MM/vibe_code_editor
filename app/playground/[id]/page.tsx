@@ -25,6 +25,7 @@ import {
 import { LoadingStep } from "@/modules/playground/components/LoadingStep";
 import { TemplateFileTree } from "@/modules/playground/components/playground-explorer";
 import PlaygroundEditor from "@/modules/playground/components/PlaygroundEditor";
+import ToggleAI from "@/modules/playground/components/ToggleAI";
 import { useFileExplorer } from "@/modules/playground/hooks/useFileExplorer";
 import { usePlayground } from "@/modules/playground/hooks/usePlayground";
 import { findFilePath } from "@/modules/playground/lib";
@@ -49,7 +50,7 @@ import { toast } from "sonner";
 
 const MainPlaygroundPage = () => {
   const { id } = useParams<{ id: string }>();
-  const [isPreviewVisible, setIsPreviewVisible] = useState<boolean>(false);
+  const [isPreviewVisible, setIsPreviewVisible] = useState<boolean>(true);
 
   const { playgroundData, templateData, isLoading, error, saveTemplateData } =
     usePlayground(id);
@@ -70,7 +71,7 @@ const MainPlaygroundPage = () => {
     handleRenameFolder,
     handleDeleteFile,
     handleDeleteFolder,
-    updateFileContent
+    updateFileContent,
   } = useFileExplorer();
 
   const {
@@ -404,9 +405,11 @@ const MainPlaygroundPage = () => {
                   <TooltipContent>Save All (Ctrl+Shift+S)</TooltipContent>
                 </Tooltip>
 
-                <Button className="" variant={"default"} size={"icon"}>
-                  <Bot className="size-4" />
-                </Button>
+                <ToggleAI
+                  isEnabled={true}
+                  onToggle={() => {}}
+                  suggestionLoading={false}
+                />
 
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -491,27 +494,28 @@ const MainPlaygroundPage = () => {
                       <PlaygroundEditor
                         activeFile={activeFile}
                         content={activeFile?.content || ""}
-                        onContentChange={(value) => activeFileId && updateFileContent(activeFileId,value)}
+                        onContentChange={(value) =>
+                          activeFileId && updateFileContent(activeFileId, value)
+                        }
                       />
-                      </ResizablePanel>
+                    </ResizablePanel>
 
-                      {isPreviewVisible && (
-                        <>
-                          <ResizableHandle />
-                          <ResizablePanel defaultSize={50}>
-                            <WebcontainerPreview
-                              templateData={templateData}
-                              instance={instance}
-                              writeFileSync={writeFileSync}
-                              isLoading={containerLoading}
-                              error={containerError}
-                              serverUrl={serverUrl}
-                              forceResetup={false}
-                            />
-                          </ResizablePanel>
-                        </>
-                      )}
-                 
+                    {isPreviewVisible && (
+                      <>
+                        <ResizableHandle />
+                        <ResizablePanel defaultSize={50}>
+                          <WebcontainerPreview
+                            templateData={templateData}
+                            instance={instance}
+                            writeFileSync={writeFileSync}
+                            isLoading={containerLoading}
+                            error={containerError}
+                            serverUrl={serverUrl}
+                            forceResetup={false}
+                          />
+                        </ResizablePanel>
+                      </>
+                    )}
                   </ResizablePanelGroup>
                 </div>
               </div>
