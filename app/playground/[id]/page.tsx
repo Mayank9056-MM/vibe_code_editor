@@ -26,6 +26,7 @@ import { LoadingStep } from "@/modules/playground/components/LoadingStep";
 import { TemplateFileTree } from "@/modules/playground/components/playground-explorer";
 import PlaygroundEditor from "@/modules/playground/components/PlaygroundEditor";
 import ToggleAI from "@/modules/playground/components/ToggleAI";
+import useAiSuggestion from "@/modules/playground/hooks/useAiSuggestion";
 import { useFileExplorer } from "@/modules/playground/hooks/useFileExplorer";
 import { usePlayground } from "@/modules/playground/hooks/usePlayground";
 import { findFilePath } from "@/modules/playground/lib";
@@ -54,6 +55,8 @@ const MainPlaygroundPage = () => {
 
   const { playgroundData, templateData, isLoading, error, saveTemplateData } =
     usePlayground(id);
+
+  const aiSuggestion = useAiSuggestion();
 
   const {
     setTemplateData,
@@ -406,9 +409,9 @@ const MainPlaygroundPage = () => {
                 </Tooltip>
 
                 <ToggleAI
-                  isEnabled={true}
-                  onToggle={() => {}}
-                  suggestionLoading={false}
+                  isEnabled={aiSuggestion.isEnabled}
+                  onToggle={aiSuggestion.toggleEnabled}
+                  suggestionLoading={aiSuggestion.isLoading}
                 />
 
                 <DropdownMenu>
@@ -496,6 +499,18 @@ const MainPlaygroundPage = () => {
                         content={activeFile?.content || ""}
                         onContentChange={(value) =>
                           activeFileId && updateFileContent(activeFileId, value)
+                        }
+                        suggestion={aiSuggestion.suggestion}
+                        suggestionLoading={aiSuggestion.isLoading}
+                        suggestionPosition={aiSuggestion.position}
+                        onAcceptSuggestion={(editor, monaco) =>
+                          aiSuggestion.acceptSuggestion(editor, monaco)
+                        }
+                        onRejectSuggestion={(editor) =>
+                          aiSuggestion.rejectSuggestion(editor)
+                        }
+                        onTriggerSuggestion={(type, editor) =>
+                          aiSuggestion.fetchSuggestion(type, editor)
                         }
                       />
                     </ResizablePanel>
