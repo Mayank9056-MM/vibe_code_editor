@@ -15,10 +15,10 @@ export default function Header() {
           {/* Logo Section */}
           <div className="flex items-center gap-6">
             <Link href="/" className="flex items-center gap-2.5 group">
-              <div className="relative flex items-center justify-center h-9 w-9 rounded-xl bg-linear-to-br from-rose-500/20 to-pink-500/20 border border-rose-500/30 transition-transform group-hover:scale-105">
+              <div className="relative flex items-center justify-center h-9 w-9 rounded-xl bg-card border border-border shadow-xs transition-transform group-hover:scale-105">
                 <Image
                   src="/logo.svg"
-                  alt="VibeCode Logo"
+                  alt="CodeNest Logo"
                   height={24}
                   width={24}
                   className="object-contain"
@@ -26,10 +26,10 @@ export default function Header() {
                 />
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="font-extrabold text-base sm:text-lg tracking-tight text-foreground">
-                  Vibe<span className="bg-linear-to-r from-rose-500 to-pink-500 bg-clip-text text-transparent">Code</span>
+                <span className="font-bold text-base sm:text-lg tracking-tight text-foreground">
+                  Code<span className="text-primary font-semibold">Nest</span>
                 </span>
-                <span className="hidden md:inline-flex text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded-md bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
+                <span className="hidden md:inline-flex text-[10px] uppercase font-semibold tracking-wider px-1.5 py-0.5 rounded-md bg-muted text-muted-foreground border border-border/60">
                   IDE
                 </span>
               </div>
@@ -64,7 +64,7 @@ export default function Header() {
               <Button
                 variant="outline"
                 size="sm"
-                className="h-8 gap-1.5 text-xs font-semibold rounded-lg hover:border-rose-500/50 hover:text-rose-600 dark:hover:text-rose-400"
+                className="h-8 gap-1.5 text-xs font-medium rounded-lg"
               >
                 <Terminal className="h-3.5 w-3.5" />
                 <span>Open Editor</span>
