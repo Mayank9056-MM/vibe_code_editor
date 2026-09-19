@@ -4,7 +4,6 @@ import {
   DEFAULT_LOGIN_REDIRECT,
   apiAuthPrefix,
   publicRoutes,
-  protectedRoutes,
   authRotues,
 } from "@/routes";
 import authConfig from "./auth.config";
