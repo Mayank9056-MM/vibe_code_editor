@@ -11,7 +11,9 @@ export const getPlaygroundById = async (id: string) => {
         id,
       },
       select: {
+        id: true,
         title: true,
+        description: true,
         templateFiles: {
           select: {
             content: true,
