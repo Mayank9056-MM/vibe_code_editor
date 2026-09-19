@@ -1,10 +1,4 @@
-interface TemplateItem {
-  filename: string;
-  fileExtension: string;
-  content: string;
-  folderName?: string;
-  items?: TemplateItem[];
-}
+import type { TemplateFile, TemplateFolder, TemplateItem } from "@/modules/playground/lib/path-to-json";
 
 interface WebContainerFile {
   file: {
@@ -18,42 +12,49 @@ interface WebContainerDirectory {
   };
 }
 
-type WebContainerFileSystem = Record<string, WebContainerFile | WebContainerDirectory>;
+export type WebContainerFileSystem = Record<string, WebContainerFile | WebContainerDirectory>;
 
-export function transformToWebContainerFormat(template: { folderName: string; items: TemplateItem[] }): WebContainerFileSystem {
+function getItemKey(item: TemplateItem): string {
+  if ("folderName" in item && item.folderName) {
+    return item.folderName;
+  }
+  const file = item as TemplateFile;
+  return file.fileExtension ? `${file.filename}.${file.fileExtension}` : file.filename;
+}
+
+export function transformToWebContainerFormat(template: TemplateFolder): WebContainerFileSystem {
   function processItem(item: TemplateItem): WebContainerFile | WebContainerDirectory {
-    if (item.folderName && item.items) {
+    if ("folderName" in item && Array.isArray(item.items)) {
       // This is a directory
       const directoryContents: WebContainerFileSystem = {};
-      
-      item.items.forEach(subItem => {
-        const key = subItem.fileExtension 
-          ? `${subItem.filename}.${subItem.fileExtension}`
-          : subItem.folderName!;
+
+      item.items.forEach((subItem) => {
+        const key = getItemKey(subItem);
         directoryContents[key] = processItem(subItem);
       });
 
       return {
-        directory: directoryContents
+        directory: directoryContents,
       };
     } else {
       // This is a file
+      const file = item as TemplateFile;
       return {
         file: {
-          contents: item.content
-        }
+          contents: file.content ?? "",
+        },
       };
     }
   }
 
   const result: WebContainerFileSystem = {};
-  
-  template.items.forEach(item => {
-    const key = item.fileExtension 
-      ? `${item.filename}.${item.fileExtension}`
-      : item.folderName!;
-    result[key] = processItem(item);
-  });
+
+  if (template?.items && Array.isArray(template.items)) {
+    template.items.forEach((item) => {
+      const key = getItemKey(item);
+      result[key] = processItem(item);
+    });
+  }
 
   return result;
 }
