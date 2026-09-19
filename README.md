@@ -1,10 +1,10 @@
-# VibeCode Editor (Next.js)
+# CodeNest Editor (Next.js)
 
 A production-ready, full-stack browser code editor with project templates, Monaco-based editing, real-time file management, web-container preview/runtime, and optional AI code suggestions.
 
 ## Overview
 
-VibeCode Editor is a Next.js App Router application that lets users:
+CodeNest Editor is a Next.js App Router application that lets users:
 - Sign in with OAuth (GitHub/Google).
 - Create and manage code playgrounds.
 - Edit files in a Monaco editor with tabs and unsaved-change tracking.
