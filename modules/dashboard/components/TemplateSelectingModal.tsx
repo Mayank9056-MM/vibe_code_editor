@@ -35,7 +35,7 @@ type TemplateSelectionModalProps = {
     title: string;
     template: "REACT" | "NEXTJS" | "EXPRESS" | "VUE" | "HONO" | "ANGULAR";
     description?: string;
-  }) => void;
+  }) => void | Promise<void>;
 };
 
 interface TemplateOption {
@@ -264,7 +264,9 @@ const TemplateSelectionModal = ({
                 <Tabs
                   defaultValue="all"
                   className="w-full sm:w-auto"
-                  onValueChange={(value) => setCategory(value as any)}
+                  onValueChange={(value) =>
+                    setCategory(value as "all" | "frontend" | "backend" | "fullstack")
+                  }
                 >
                   <TabsList className="grid grid-cols-4 w-full sm:w-[400px]">
                     <TabsTrigger value="all">All</TabsTrigger>
