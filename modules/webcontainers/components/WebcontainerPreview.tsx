@@ -5,16 +5,16 @@ import React, { useEffect, useRef, useState } from "react";
 import { transformToWebContainerFormat } from "../hooks/transformer";
 import { CheckCircle, Loader2, XCircle } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
-import TerminalComponent from "./terminal";
+import TerminalComponent, { TerminalRef } from "./terminal";
 
 interface WebContainerPreviewProps {
   templateData: TemplateFolder;
-  serverUrl: string;
+  serverUrl: string | null;
   isLoading: boolean;
   error: string | null;
   instance: WebContainer | null;
-  writeFileSync: (path: string, content: string) => Promise<void>;
-  forceResetup?: string; // optional prop to force re-setup
+  writeFileSync?: (path: string, content: string) => Promise<void>;
+  forceResetup?: boolean;
 }
 
 const WebcontainerPreview = ({
@@ -23,11 +23,11 @@ const WebcontainerPreview = ({
   instance,
   isLoading,
   serverUrl,
-  writeFileSync,
+  _writeFileSync,
   forceResetup = false,
-}: WebContainerPreviewProps) => {
-  const [previewUrl, setPreviewUrl] = useState<string>("");
-  const [loadingState, setLoadingState] = useState({
+}: WebContainerPreviewProps & { _writeFileSync?: (path: string, content: string) => Promise<void> }) => {
+  const [previewUrl, setPreviewUrl] = useState<string>(serverUrl ?? "");
+  const [, setLoadingState] = useState({
     transforming: false,
     mounting: false,
     installing: false,
@@ -41,7 +41,7 @@ const WebcontainerPreview = ({
   const [isSetupComplete, setIsSetupComplete] = useState(false);
   const [isSetupInProgress, setIsSetupInProgress] = useState(false);
 
-  const terminalRef = useRef<any>(null);
+  const terminalRef = useRef<TerminalRef | null>(null);
 
   // Reset setup state when forceResetup changes
 
@@ -106,7 +106,9 @@ const WebcontainerPreview = ({
             }));
             return;
           }
-        } catch (error) {}
+        } catch {
+          // ignore
+        }
 
         // Step-1 transform the data
         setLoadingState((prev) => ({
@@ -122,7 +124,6 @@ const WebcontainerPreview = ({
           );
         }
 
-        // @ts-ignore
         const files = transformToWebContainerFormat(templateData);
         setLoadingState((prev) => ({
           ...prev,
@@ -214,7 +215,7 @@ const WebcontainerPreview = ({
             ready: true,
           }));
           setIsSetupComplete(true);
-          setIsSetupComplete(false);
+          setIsSetupInProgress(false);
         });
 
         // Handle start process output - stream to terminal
@@ -250,10 +251,6 @@ const WebcontainerPreview = ({
 
     setupContainer();
   }, [instance, templateData, isSetupComplete, isSetupInProgress]);
-
-  useEffect(() => {
-    return () => {};
-  });
 
   if (isLoading) {
     return (
