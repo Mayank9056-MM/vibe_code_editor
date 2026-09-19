@@ -269,12 +269,16 @@ const WebcontainerPreview = ({
 
   if (error || setupError) {
     return (
-      <div className="h-full flex items-center justify-center">
-        <div className="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 p-6 rounded-lg max-w-md">
-          <div className="flex items-center gap-2 mb-3">
+      <div className="h-full flex items-center justify-center p-6">
+        <div className="bg-card border border-destructive/20 p-6 rounded-2xl max-w-md w-full shadow-sm text-center space-y-3">
+          <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-destructive/10 text-destructive">
             <XCircle className="h-5 w-5" />
-            <h3 className="font-semibold">Error</h3>
-            <p className="text-sm">{error || setupError}</p>
+          </div>
+          <div>
+            <h3 className="font-semibold text-base text-foreground">Preview Setup Issue</h3>
+            <p className="text-xs sm:text-sm text-muted-foreground mt-1 leading-relaxed">
+              {error || setupError || "Unable to start the preview environment. Please check the terminal for build details."}
+            </p>
           </div>
         </div>
       </div>
