@@ -1,5 +1,9 @@
-import React from "react";
+"use client";
+
+import React, { Suspense } from "react";
 import Image from "next/image";
+import { useSearchParams } from "next/navigation";
+import { AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -11,38 +15,61 @@ import {
 } from "@/components/ui/card";
 import { handleGoogleSignIn, handleGithubSignIn } from "../actions";
 
-export default function SignInFormClient() {
+function SignInContent() {
+  const searchParams = useSearchParams();
+  const error = searchParams?.get("error");
+
+  const getUserFriendlyErrorMessage = () => {
+    if (!error) return null;
+    if (error === "Configuration") {
+      return "Unable to connect to the authentication service. Please check database connectivity and try again.";
+    }
+    if (error === "AccessDenied") {
+      return "Access was denied. Please try again with an authorized account.";
+    }
+    return "Sign in was unsuccessful. Please try again.";
+  };
+
+  const errorMessage = getUserFriendlyErrorMessage();
+
   return (
-    <Card className="w-full border-border/80 bg-card/90 backdrop-blur-xl shadow-2xl rounded-2xl overflow-hidden">
+    <Card className="w-full border-border bg-card shadow-lg rounded-2xl overflow-hidden">
       <CardHeader className="space-y-3 text-center pb-6">
         {/* Brand Logo */}
-        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-linear-to-br from-rose-500/20 to-pink-500/20 border border-rose-500/30 shadow-md">
+        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-card border border-border shadow-xs">
           <Image
             src="/logo.svg"
-            alt="VibeCode Logo"
-            width={32}
-            height={32}
+            alt="CodeNest Logo"
+            width={34}
+            height={34}
             className="object-contain"
             priority
           />
         </div>
 
         <div>
-          <CardTitle className="text-2xl font-extrabold tracking-tight text-foreground">
-            Welcome to <span className="bg-linear-to-r from-rose-500 to-pink-500 bg-clip-text text-transparent">VibeCode</span>
+          <CardTitle className="text-2xl font-bold tracking-tight text-foreground">
+            Welcome to Code<span className="text-primary font-semibold">Nest</span>
           </CardTitle>
           <CardDescription className="text-xs sm:text-sm text-muted-foreground mt-1">
-            Sign in to access your cloud playgrounds and AI code editor
+            Sign in to access your cloud playgrounds and editor
           </CardDescription>
         </div>
       </CardHeader>
 
       <CardContent className="grid gap-3 px-6">
+        {errorMessage && (
+          <div className="flex items-start gap-2.5 p-3 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive text-xs leading-relaxed animate-in fade-in">
+            <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
+            <span>{errorMessage}</span>
+          </div>
+        )}
+
         <form action={handleGoogleSignIn}>
           <Button
             type="submit"
             variant="outline"
-            className="w-full h-11 font-medium gap-3 rounded-xl border-border/80 hover:bg-accent hover:border-border transition-all cursor-pointer shadow-xs"
+            className="w-full h-11 font-medium gap-3 rounded-xl border-border hover:bg-accent hover:border-border transition-all cursor-pointer shadow-xs"
           >
             <svg className="h-4 w-4" viewBox="0 0 24 24">
               <path
@@ -70,7 +97,7 @@ export default function SignInFormClient() {
           <Button
             type="submit"
             variant="outline"
-            className="w-full h-11 font-medium gap-3 rounded-xl border-border/80 hover:bg-accent hover:border-border transition-all cursor-pointer shadow-xs"
+            className="w-full h-11 font-medium gap-3 rounded-xl border-border hover:bg-accent hover:border-border transition-all cursor-pointer shadow-xs"
           >
             <svg className="h-4 w-4 fill-current" viewBox="0 0 24 24">
               <path
@@ -90,5 +117,21 @@ export default function SignInFormClient() {
         </p>
       </CardFooter>
     </Card>
+  );
+}
+
+export default function SignInFormClient() {
+  return (
+    <Suspense
+      fallback={
+        <Card className="w-full border-border bg-card p-8">
+          <div className="flex justify-center">
+            <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+          </div>
+        </Card>
+      }
+    >
+      <SignInContent />
+    </Suspense>
   );
 }
