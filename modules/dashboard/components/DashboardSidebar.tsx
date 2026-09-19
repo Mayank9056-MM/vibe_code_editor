@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -20,7 +19,6 @@ import {
   Database,
   FlameIcon,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import {
   Sidebar,
   SidebarContent,
@@ -58,24 +56,28 @@ const lucideIconMap: Record<string, LucideIcon> = {
 };
 
 export function DashboardSidebar({
-  initialPlaygroundData,
+  initialPlaygroundData = [],
 }: {
-  initialPlaygroundData: PlaygroundData[];
+  initialPlaygroundData?: PlaygroundData[];
 }) {
   const pathname = usePathname();
-  const [starredPlaygrounds, setStarredPlaygrounds] = useState(
-    initialPlaygroundData.filter((p) => p.starred)
-  );
-  const [recentPlaygrounds, setRecentPlaygrounds] = useState(
-    initialPlaygroundData
-  );
+  const starredPlaygrounds = (initialPlaygroundData ?? []).filter((p) => p.starred);
+  const recentPlaygrounds = initialPlaygroundData ?? [];
 
   return (
     <Sidebar variant="inset" collapsible="icon" className="border-1 border-r">
-      <SidebarHeader>
-        <div className="flex items-center gap-2 px-4 py-3 justify-center">
-          <Image src={"/logo.svg"} alt="logo" height={60} width={60} />
-        </div>
+      <SidebarHeader className="border-b border-border/50 py-3 px-3">
+        <Link href="/" className="flex items-center gap-2.5 px-2 group">
+          <div className="flex items-center justify-center h-8 w-8 rounded-xl bg-linear-to-br from-rose-500/20 to-pink-500/20 border border-rose-500/30 group-hover:scale-105 transition-transform shrink-0">
+            <Image src="/logo.svg" alt="VibeCode Logo" height={22} width={22} className="object-contain" />
+          </div>
+          <div className="flex flex-col group-data-[collapsible=icon]:hidden">
+            <span className="font-extrabold text-sm tracking-tight text-foreground leading-tight">
+              Vibe<span className="text-rose-500">Code</span>
+            </span>
+            <span className="text-[10px] text-muted-foreground font-medium">Cloud IDE</span>
+          </div>
+        </Link>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
