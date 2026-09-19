@@ -5,11 +5,11 @@ import { Metadata } from "next"
 
 
 export const metadata: Metadata = {
-    title: {
-        template: "Vibe - Editor",
-        default: "Code Editor For VibeCoders - VibeCode"
-    }
-}
+  title: {
+    template: "%s | CodeNest",
+    default: "CodeNest - Cloud IDE & Code Editor",
+  },
+};
 
 export default function HomeLayout({children}: {children: React.ReactNode}){
      return (
