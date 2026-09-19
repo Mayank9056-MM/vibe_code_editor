@@ -5,7 +5,7 @@ const EmptyState = () => {
   return (
     <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
       <div className="relative mb-6">
-        <div className="absolute -inset-4 bg-rose-500/10 dark:bg-rose-500/5 rounded-full blur-xl pointer-events-none" />
+        <div className="absolute -inset-4 bg-primary/10 dark:bg-primary/5 rounded-full blur-xl pointer-events-none" />
         <Image
           src="/empty-state.svg"
           alt="No projects found"
