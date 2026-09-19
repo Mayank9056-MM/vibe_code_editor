@@ -41,10 +41,14 @@ import {
   AlertCircle,
   FileText,
   FolderOpen,
+  LayoutDashboard,
+  RefreshCw,
   Save,
   Settings,
   X,
 } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
 import { useParams } from "next/navigation";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -290,15 +294,52 @@ const MainPlaygroundPage = () => {
   // Error state
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center h-[calc(100vh-4rem)] p-4">
-        <AlertCircle className="h-12 w-12 text-red-500 mb-4" />
-        <h2 className="text-xl font-semibold text-red-600 mb-2">
-          Something went wrong
-        </h2>
-        <p className="text-gray-600 mb-4">{error}</p>
-        <Button onClick={() => window.location.reload()} variant="destructive">
-          Try Again
-        </Button>
+      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-4rem)] p-6 bg-background text-foreground">
+        <div className="max-w-md w-full p-8 rounded-2xl border border-border bg-card shadow-lg text-center space-y-6">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-card border border-border shadow-2xs">
+            <Image
+              src="/logo.svg"
+              alt="CodeNest Logo"
+              width={32}
+              height={32}
+              className="object-contain"
+              priority
+            />
+          </div>
+
+          <div className="space-y-2">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-destructive/10 text-destructive text-xs font-medium">
+              <AlertCircle className="h-3.5 w-3.5" />
+              <span>Workspace Unavailable</span>
+            </div>
+            <h2 className="text-xl font-bold tracking-tight text-foreground">
+              Unable to Load Project
+            </h2>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              We couldn&apos;t load the workspace files for this project. The project might have been moved or the database service is currently unreachable.
+            </p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-2.5 pt-2">
+            <Button
+              onClick={() => window.location.reload()}
+              className="w-full h-10 font-medium gap-2 rounded-xl"
+            >
+              <RefreshCw className="h-4 w-4" />
+              Try Again
+            </Button>
+            <Button
+              asChild
+              variant="outline"
+              className="w-full h-10 font-medium gap-2 rounded-xl border-border hover:bg-accent"
+            >
+              <Link href="/dashboard">
+                <LayoutDashboard className="h-4 w-4" />
+                Dashboard
+              </Link>
+            </Button>
+          </div>
+        </div>
       </div>
     );
   }
@@ -306,22 +347,33 @@ const MainPlaygroundPage = () => {
   // Loading state
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center h-[calc(100vh-4rem)] p-4">
-        <div className="w-full max-w-md p-6 rounded-lg shadow-sm border">
-          <h2 className="text-xl font-semibold mb-6 text-center">
-            Loading Playground
-          </h2>
+      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-4rem)] p-6 bg-background text-foreground">
+        <div className="w-full max-w-md p-8 rounded-2xl border border-border bg-card shadow-lg">
+          <div className="flex items-center justify-center gap-2 mb-6">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-card border border-border">
+              <Image
+                src="/logo.svg"
+                alt="CodeNest Logo"
+                width={18}
+                height={18}
+                className="object-contain"
+              />
+            </div>
+            <h2 className="text-base font-semibold tracking-tight">
+              Initializing Workspace
+            </h2>
+          </div>
           <div>
             <LoadingStep
               currentStep={1}
               step={1}
-              label="Loading playground data"
+              label="Loading workspace metadata"
             />
 
             <LoadingStep
               currentStep={2}
               step={2}
-              label="Setting up environment"
+              label="Setting up in-browser environment"
             />
 
             <LoadingStep currentStep={3} step={3} label="Ready to code" />
@@ -334,14 +386,41 @@ const MainPlaygroundPage = () => {
   // No template data
   if (!templateData) {
     return (
-      <div className="flex flex-col items-center justify-center h-[calc(100vh-4rem)] p-4">
-        <FolderOpen className="h-12 w-12 text-amber-500 mb-4" />
-        <h2 className="text-xl font-semibold text-amber-600 mb-2">
-          No template data available
-        </h2>
-        <Button onClick={() => window.location.reload()} variant="outline">
-          Reload Template
-        </Button>
+      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-4rem)] p-6 bg-background text-foreground">
+        <div className="max-w-md w-full p-8 rounded-2xl border border-border bg-card shadow-lg text-center space-y-6">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-500">
+            <FolderOpen className="h-7 w-7" />
+          </div>
+
+          <div className="space-y-2">
+            <h2 className="text-xl font-bold tracking-tight text-foreground">
+              No Files Found
+            </h2>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              No template files were detected in this workspace. You can re-attempt loading or return to the dashboard to select another template.
+            </p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-2.5 pt-2">
+            <Button
+              onClick={() => window.location.reload()}
+              className="w-full h-10 font-medium gap-2 rounded-xl"
+            >
+              <RefreshCw className="h-4 w-4" />
+              Reload Workspace
+            </Button>
+            <Button
+              asChild
+              variant="outline"
+              className="w-full h-10 font-medium gap-2 rounded-xl border-border hover:bg-accent"
+            >
+              <Link href="/dashboard">
+                <LayoutDashboard className="h-4 w-4" />
+                Dashboard
+              </Link>
+            </Button>
+          </div>
+        </div>
       </div>
     );
   }
