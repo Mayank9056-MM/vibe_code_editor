@@ -33,12 +33,12 @@ import { findFilePath } from "@/modules/playground/lib";
 import {
   TemplateFile,
   TemplateFolder,
+  TemplateItem,
 } from "@/modules/playground/lib/path-to-json";
 import WebcontainerPreview from "@/modules/webcontainers/components/WebcontainerPreview";
 import { useWebContainer } from "@/modules/webcontainers/hooks/useWebcontainer";
 import {
   AlertCircle,
-  Bot,
   FileText,
   FolderOpen,
   Save,
@@ -83,7 +83,6 @@ const MainPlaygroundPage = () => {
     error: containerError,
     instance,
     writeFileSync,
-    //@ts-ignore
   } = useWebContainer({ templateData });
 
   const lastSyncedContent = useRef<Map<string, string>>(new Map());
@@ -195,9 +194,7 @@ const MainPlaygroundPage = () => {
           JSON.stringify(latestTemplateData)
         );
 
-        // @ts-ignore
-        const updateFileContent = (items: any[]) =>
-          // @ts-ignore
+        const updateFileContent = (items: TemplateItem[]): TemplateItem[] =>
           items.map((item) => {
             if ("folderName" in item) {
               return { ...item, items: updateFileContent(item.items) };
@@ -223,8 +220,8 @@ const MainPlaygroundPage = () => {
         }
 
         // Use saveTemplateData to persist changes
-        const newTemplateData = await saveTemplateData(updatedTemplateData);
-        setTemplateData(newTemplateData || updatedTemplateData);
+        await saveTemplateData(updatedTemplateData);
+        setTemplateData(updatedTemplateData);
 
         // Update open files
         const updatedOpenFiles = openFiles.map((f) =>
@@ -273,6 +270,7 @@ const MainPlaygroundPage = () => {
       await Promise.all(unsavedFiles.map((f) => handleSave(f.id)));
       toast.success(`Saved ${unsavedFiles.length} file(s)`);
     } catch (error) {
+      console.error("Failed to save some files:", error);
       toast.error("Failed to save some files");
     }
   };
@@ -374,8 +372,8 @@ const MainPlaygroundPage = () => {
                   {playgroundData?.title || "Code Playground"}
                 </h1>
                 <p className="text-xs text-muted-foreground">
-                  {openFile.length} File(s) Open
-                  {hasUnsavedChanges && "• Unsaved changes"}
+                  {openFiles.length} File(s) Open
+                  {hasUnsavedChanges && " • Unsaved changes"}
                 </p>
               </div>
 
