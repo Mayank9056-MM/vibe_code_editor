@@ -1,108 +1,81 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
-// import { ThemeToggle } from "@/components/ui/toggle-theme";
 import UserButton from "../auth/components/user-button";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { Button } from "@/components/ui/button";
+import { Github, LayoutDashboard, Terminal } from "lucide-react";
 
 export default function Header() {
   return (
-    <>
-      <div className="sticky top-0 left-0 right-0 z-50">
-        <div className="bg-white dark:bg-black/5 w-full">
-          {/* Rest of the header content */}
-          <div className="flex items-center justify-center w-full flex-col">
-            <div
-              className="
-                            flex items-center justify-between
-                            bg-linear-to-b from-white/90 via-gray-50/90 to-white/90
-                            dark:from-zinc-900/90 dark:via-zinc-800/90 dark:to-zinc-900/90
-                            shadow-[0_2px_20px_-2px_rgba(0,0,0,0.1)]
-                            backdrop-blur-md
-                            border-x border-b 
-                            border-[rgba(230,230,230,0.7)] dark:border-[rgba(70,70,70,0.7)]
-                            w-full sm:min-w-[800px] sm:max-w-[1200px]
-                            rounded-b-[28px]
-                            px-4 py-2.5
-                            relative
-                            transition-all duration-300 ease-in-out
-                        "
-            >
-              <div className="relative z-10 flex items-center justify-between w-full gap-2">
-                {/* Logo Section with Navigation Links */}
-                <div className="flex items-center gap-6 justify-center">
-                  <Link
-                    href="/"
-                    className="flex items-center gap-2 justify-center"
-                  >
-                    <Image
-                      src={"/logo.svg"}
-                      alt="Logo"
-                      height={60}
-                      width={60}
-                    />
-
-                    <span className="hidden sm:block font-extrabold text-lg">
-                      VibeCode Editor
-                    </span>
-                  </Link>
-                  <span className="text-zinc-300 dark:text-zinc-700">|</span>
-                  {/* Desktop Navigation Links */}
-                  <div className="hidden sm:flex items-center gap-4">
-                    <Link
-                      href="/docs/components/background-paths"
-                      className="text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 transition-colors"
-                    >
-                      Docs
-                    </Link>
-                    {/* <Link
-                                            href="/pricing"
-                                            className="text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 transition-colors"
-                                        >
-                                            Pricing
-                                        </Link> */}
-                    <Link
-                      href="https://codesnippetui.pro/templates?utm_source=codesnippetui.com&utm_medium=header"
-                      target="_blank"
-                      className="text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 transition-colors flex items-center gap-2"
-                    >
-                      API
-                      <span className="text-green-500 dark:text-green-400 border border-green-500 dark:border-green-400 rounded-lg px-1 py-0.5 text-xs">
-                        New
-                      </span>
-                    </Link>
-                  </div>
-                </div>
-
-                {/* Right side items */}
-                <div className="hidden sm:flex items-center gap-3">
-                  <span className="text-zinc-300 dark:text-zinc-700">|</span>
-                  {/* <HeaderPro /> */}
-                  <ThemeToggle />
-                  <UserButton />
-                </div>
-
-                {/* Mobile Navigation remains unchanged */}
-                <div className="flex sm:hidden items-center gap-4">
-                  <Link
-                    href="/docs/components/action-search-bar"
-                    className="text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 transition-colors"
-                  >
-                    Docs
-                  </Link>
-                  <Link
-                    href="/pricing"
-                    className="text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 transition-colors"
-                  >
-                    API
-                  </Link>
-                  <ThemeToggle />
-                  <UserButton />
-                </div>
+    <header className="sticky top-0 left-0 right-0 z-50 w-full px-4 pt-3 sm:pt-4">
+      <div className="mx-auto max-w-6xl">
+        <div className="flex items-center justify-between rounded-2xl border border-border/60 bg-background/80 px-4 py-2.5 shadow-sm backdrop-blur-md transition-all">
+          {/* Logo Section */}
+          <div className="flex items-center gap-6">
+            <Link href="/" className="flex items-center gap-2.5 group">
+              <div className="relative flex items-center justify-center h-9 w-9 rounded-xl bg-linear-to-br from-rose-500/20 to-pink-500/20 border border-rose-500/30 transition-transform group-hover:scale-105">
+                <Image
+                  src="/logo.svg"
+                  alt="VibeCode Logo"
+                  height={24}
+                  width={24}
+                  className="object-contain"
+                  priority
+                />
               </div>
-            </div>
+              <div className="flex items-center gap-1.5">
+                <span className="font-extrabold text-base sm:text-lg tracking-tight text-foreground">
+                  Vibe<span className="bg-linear-to-r from-rose-500 to-pink-500 bg-clip-text text-transparent">Code</span>
+                </span>
+                <span className="hidden md:inline-flex text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded-md bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
+                  IDE
+                </span>
+              </div>
+            </Link>
+
+            <span className="hidden sm:inline-block text-border">|</span>
+
+            {/* Nav Links */}
+            <nav className="hidden sm:flex items-center gap-4 text-sm font-medium">
+              <Link
+                href="/dashboard"
+                className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5"
+              >
+                <LayoutDashboard className="h-4 w-4" />
+                <span>Dashboard</span>
+              </Link>
+              <Link
+                href="https://github.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5"
+              >
+                <Github className="h-4 w-4" />
+                <span>GitHub</span>
+              </Link>
+            </nav>
+          </div>
+
+          {/* Right side items */}
+          <div className="flex items-center gap-2.5">
+            <Link href="/dashboard" className="hidden sm:inline-flex">
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-8 gap-1.5 text-xs font-semibold rounded-lg hover:border-rose-500/50 hover:text-rose-600 dark:hover:text-rose-400"
+              >
+                <Terminal className="h-3.5 w-3.5" />
+                <span>Open Editor</span>
+              </Button>
+            </Link>
+
+            <ThemeToggle />
+            <UserButton />
           </div>
         </div>
       </div>
-    </>
+    </header>
   );
 }
