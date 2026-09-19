@@ -68,12 +68,12 @@ export function DashboardSidebar({
     <Sidebar variant="inset" collapsible="icon" className="border-1 border-r">
       <SidebarHeader className="border-b border-border/50 py-3 px-3">
         <Link href="/" className="flex items-center gap-2.5 px-2 group">
-          <div className="flex items-center justify-center h-8 w-8 rounded-xl bg-linear-to-br from-rose-500/20 to-pink-500/20 border border-rose-500/30 group-hover:scale-105 transition-transform shrink-0">
-            <Image src="/logo.svg" alt="VibeCode Logo" height={22} width={22} className="object-contain" />
+          <div className="flex items-center justify-center h-8 w-8 rounded-xl bg-card border border-border shadow-xs group-hover:scale-105 transition-transform shrink-0">
+            <Image src="/logo.svg" alt="CodeNest Logo" height={22} width={22} className="object-contain" />
           </div>
           <div className="flex flex-col group-data-[collapsible=icon]:hidden">
-            <span className="font-extrabold text-sm tracking-tight text-foreground leading-tight">
-              Vibe<span className="text-rose-500">Code</span>
+            <span className="font-bold text-sm tracking-tight text-foreground leading-tight">
+              Code<span className="text-primary font-semibold">Nest</span>
             </span>
             <span className="text-[10px] text-muted-foreground font-medium">Cloud IDE</span>
           </div>
