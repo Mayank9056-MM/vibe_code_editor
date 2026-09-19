@@ -4,14 +4,18 @@ import { toast } from "sonner";
 import type { TemplateFolder } from "../lib/path-to-json";
 import { getPlaygroundById, SaveUpdatedCode } from "../actions";
 
-interface playgroundData {
+export interface PlaygroundData {
   id: string;
   title: string;
-  [key: string]: any;
+  description?: string | null;
+  templateFiles?: {
+    content: unknown;
+  }[];
+  [key: string]: unknown;
 }
 
-interface UsePlaygroundRetrun {
-  playgroundData: playgroundData | null;
+interface UsePlaygroundReturn {
+  playgroundData: PlaygroundData | null;
   templateData: TemplateFolder | null;
   isLoading: boolean;
   error: string | null;
@@ -19,8 +23,8 @@ interface UsePlaygroundRetrun {
   saveTemplateData: (data: TemplateFolder) => Promise<void>;
 }
 
-export const usePlayground = (id: string): UsePlaygroundRetrun => {
-  const [playgroundData, setPlaygroundData] = useState<playgroundData | null>(
+export const usePlayground = (id: string): UsePlaygroundReturn => {
+  const [playgroundData, setPlaygroundData] = useState<PlaygroundData | null>(
     null
   );
   const [templateData, setTemplateData] = useState<TemplateFolder | null>(null);
@@ -36,13 +40,22 @@ export const usePlayground = (id: string): UsePlaygroundRetrun => {
 
       const data = await getPlaygroundById(id);
 
-      // @ts-ignore
-      setPlaygroundData(data);
+      if (data) {
+        setPlaygroundData(data);
+      }
       const rawContent = data?.templateFiles?.[0]?.content;
 
       if (typeof rawContent === "string") {
-        const parsedContent = JSON.parse(rawContent);
-        setTemplateData(parsedContent);
+        try {
+          const parsedContent = JSON.parse(rawContent);
+          setTemplateData(parsedContent);
+          toast.success("playground loaded successfully");
+          return;
+        } catch {
+          // fallback to api
+        }
+      } else if (rawContent && typeof rawContent === "object") {
+        setTemplateData(rawContent as unknown as TemplateFolder);
         toast.success("playground loaded successfully");
         return;
       }
