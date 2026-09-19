@@ -134,8 +134,11 @@ const PlaygroundEditor = ({
             ],
           };
         },
-        freeInlineCompletions: (completions: any) => {
+        freeInlineCompletions: (_completions: any) => {
           console.log("freeInlineCompletions called");
+        },
+        disposeInlineCompletions: (_completions: any) => {
+          console.log("disposeInlineCompletions called");
         },
       };
     },
@@ -542,7 +545,7 @@ const PlaygroundEditor = ({
     updateEditorLanguage();
   };
 
-  const updateEditorLanguage = () => {
+  const updateEditorLanguage = useCallback(() => {
     if (!activeFile || !monacoRef.current || !editorRef.current) return;
 
     const model = editorRef.current.getModel();
@@ -556,11 +559,11 @@ const PlaygroundEditor = ({
     } catch (error) {
       console.warn("Failed to set editor language: ", error);
     }
-  };
+  }, [activeFile]);
 
   useEffect(() => {
     updateEditorLanguage();
-  }, []);
+  }, [updateEditorLanguage]);
 
   // Cleanup on unmount
   useEffect(() => {
