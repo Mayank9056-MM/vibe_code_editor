@@ -13,6 +13,9 @@ import {
   Edit3,
 } from "lucide-react";
 
+import Link from "next/link";
+import Image from "next/image";
+
 import {
   Collapsible,
   CollapsibleContent,
@@ -20,6 +23,7 @@ import {
 } from "@/components/ui/collapsible";
 import {
   Sidebar,
+  SidebarHeader,
   SidebarContent,
   SidebarGroup,
   SidebarGroupAction,
@@ -133,6 +137,16 @@ export function TemplateFileTree({
 
   return (
     <Sidebar>
+      <SidebarHeader className="border-b border-border/50 px-3 py-2.5">
+        <Link href="/dashboard" className="flex items-center gap-2 group">
+          <div className="flex items-center justify-center h-7 w-7 rounded-lg bg-rose-500/10 border border-rose-500/20 group-hover:scale-105 transition-transform">
+            <Image src="/logo.svg" alt="VibeCode Logo" width={18} height={18} className="object-contain" />
+          </div>
+          <span className="text-sm font-bold tracking-tight text-foreground">
+            Vibe<span className="text-rose-500">Code</span>
+          </span>
+        </Link>
+      </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>{title}</SidebarGroupLabel>
