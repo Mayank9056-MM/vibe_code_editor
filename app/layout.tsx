@@ -17,8 +17,24 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Vibe code edtior",
-  description: "A ai powered vibe code editor",
+  title: {
+    default: "VibeCode - AI-Powered Cloud Code Editor",
+    template: "%s | VibeCode",
+  },
+  description:
+    "Next-generation cloud development environment and AI-powered in-browser code editor.",
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/logo.svg", type: "image/svg+xml" },
+    ],
+    shortcut: "/favicon.ico",
+    apple: [
+      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+  },
+  manifest: "/site.webmanifest",
 };
 
 export default async function RootLayout({
