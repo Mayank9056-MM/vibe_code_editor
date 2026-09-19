@@ -1,10 +1,11 @@
 import { create } from "zustand";
 import { toast } from "sonner";
+import type { WebContainer } from "@webcontainer/api";
 
 import { TemplateFile, TemplateFolder } from "../lib/path-to-json";
 import { generateFileId } from "../lib";
 
-interface OpenFile extends TemplateFile {
+export interface OpenFile extends TemplateFile {
   id: string;
   hasUnsavedChanges: boolean;
   content: string;
@@ -35,14 +36,14 @@ interface FileExplorerState {
     newFile: TemplateFile,
     parentPath: string,
     writeFileSync: (filePath: string, content: string) => Promise<void>,
-    instance: any,
+    instance: WebContainer | null,
     saveTemplateData: (data: TemplateFolder) => Promise<void>
   ) => Promise<void>;
 
   handleAddFolder: (
     newFolder: TemplateFolder,
     parentPath: string,
-    instance: any,
+    instance: WebContainer | null,
     saveTemplateData: (data: TemplateFolder) => Promise<void>
   ) => Promise<void>;
 
@@ -75,14 +76,6 @@ interface FileExplorerState {
   updateFileContent: (fileId: string, content: string) => void;
 }
 
-interface OpenFile extends TemplateFile {
-  id: string;
-  hasUnsavedChanges: boolean;
-  content: string;
-  originalContent: string;
-}
-
-// @ts-ignore
 export const useFileExplorer = create<FileExplorerState>((set, get) => ({
   templateData: null,
   playgroundId: "",
