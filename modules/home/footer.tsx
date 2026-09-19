@@ -1,47 +1,37 @@
 import Link from "next/link";
-import { Github as LucideGithub } from "lucide-react";
-import Image from "next/image";
-
-interface ProjectLink {
-  href: string | null;
-  text: string;
-  description: string;
-  icon: string;
-  iconDark?: string;
-  isNew?: boolean;
-}
+import { Github } from "lucide-react";
 
 export default function Footer() {
-  const socialLinks = [
-    {
-      href: "#",
-      icon: (
-        <LucideGithub className="w-5 h-5 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors" />
-      ),
-    },
-  ];
-
   return (
-    <footer className="border-t border-zinc-200 dark:border-zinc-800">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 py-8 flex flex-col items-center space-y-6 text-center">
-        {/* Social Links */}
-        <div className="flex gap-4">
-          {socialLinks.map((link, index) => (
-            <Link
-              key={index}
-              href={link.href || "#"}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {link.icon}
-            </Link>
-          ))}
+    <footer className="relative z-20 border-t border-border/40 bg-background/50 backdrop-blur-sm">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+        {/* Brand */}
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-semibold tracking-tight">
+            VibeCode <span className="text-rose-500">Editor</span>
+          </span>
+          <span className="text-xs text-muted-foreground">
+            • Production-grade Cloud Development
+          </span>
         </div>
 
-        {/* Copyright Notice */}
-        <p className="text-sm text-zinc-500 dark:text-zinc-400">
-          &copy; {new Date().getFullYear()} Codesnippet. All rights reserved.
+        {/* Copyright */}
+        <p className="text-xs text-muted-foreground">
+          &copy; {new Date().getFullYear()} VibeCode Editor. Built for modern engineers.
         </p>
+
+        {/* Social Links */}
+        <div className="flex items-center gap-3">
+          <Link
+            href="https://github.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-muted-foreground hover:text-foreground transition-colors p-1.5 rounded-md hover:bg-accent"
+            aria-label="GitHub repository"
+          >
+            <Github className="w-4 h-4" />
+          </Link>
+        </div>
       </div>
     </footer>
   );
