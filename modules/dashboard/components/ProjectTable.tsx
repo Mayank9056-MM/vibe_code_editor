@@ -53,7 +53,6 @@ import {
   Eye,
 } from "lucide-react";
 import { toast } from "sonner";
-import { deleteProjectById } from "../actions";
 import { MarkedToggleButton } from "./MarkToggleButton";
 
 interface ProjectTableProps {
@@ -63,7 +62,7 @@ interface ProjectTableProps {
     data: { title: string; description: string }
   ) => Promise<void>;
   onDeleteProject?: (id: string) => Promise<void>;
-  onDuplicateProject?: (id: string) => Promise<void>;
+  onDuplicateProject?: (id: string) => Promise<unknown>;
   onMarkasFavorite?: (id: string) => Promise<void>;
 }
 
@@ -72,12 +71,21 @@ interface EditProjectData {
   description: string;
 }
 
+const templateMeta: Record<string, { icon: string; label: string; badgeClass: string }> = {
+  REACT: { icon: "/react.svg", label: "React", badgeClass: "bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border-cyan-500/30" },
+  NEXTJS: { icon: "/nextjs-icon.svg", label: "Next.js", badgeClass: "bg-zinc-500/10 text-zinc-900 dark:text-zinc-200 border-zinc-500/30" },
+  EXPRESS: { icon: "/expressjs-icon.svg", label: "Express", badgeClass: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30" },
+  VUE: { icon: "/vuejs-icon.svg", label: "Vue.js", badgeClass: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30" },
+  HONO: { icon: "/hono.svg", label: "Hono", badgeClass: "bg-orange-500/10 text-orange-600 dark:text-orange-400 border-orange-500/30" },
+  ANGULAR: { icon: "/angular-2.svg", label: "Angular", badgeClass: "bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/30" },
+};
+
 export default function ProjectTable({
   projects,
   onUpdateProject,
   onDeleteProject,
   onDuplicateProject,
-  onMarkasFavorite,
+  onMarkasFavorite: _onMarkasFavorite,
 }: ProjectTableProps) {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
@@ -87,7 +95,6 @@ export default function ProjectTable({
     description: "",
   });
   const [isLoading, setIsLoading] = useState(false);
-  const [favoutrie, setFavourite] = useState(false);
 
   const handleEditClick = (project: Project) => {
     setSelectedProject(project);
@@ -112,17 +119,13 @@ export default function ProjectTable({
     try {
       await onUpdateProject(selectedProject.id, editData);
       setEditDialogOpen(false);
-      toast.success("Project upadated successfully");
+      toast.success("Project updated successfully");
     } catch (error) {
       toast.error("Failed to update project");
       console.error("Error updating project", error);
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleMarkasFavorite = async (project: Project) => {
-    //    Write your logic here
   };
 
   const handleDeleteProject = async () => {
@@ -197,28 +200,52 @@ export default function ProjectTable({
                   </div>
                 </TableCell>
                 <TableCell>
-                  <Badge
-                    variant="outline"
-                    className="bg-[#E93F3F15] text-[#E93F3F] border-[#E93F3F]"
-                  >
-                    {project.template}
-                  </Badge>
+                  {(() => {
+                    const meta = templateMeta[project.template] || {
+                      icon: "/file.svg",
+                      label: project.template,
+                      badgeClass: "bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/30",
+                    };
+                    return (
+                      <Badge
+                        variant="outline"
+                        className={`inline-flex items-center gap-1.5 font-medium px-2.5 py-1 rounded-md text-xs ${meta.badgeClass}`}
+                      >
+                        <Image
+                          src={meta.icon}
+                          alt={meta.label}
+                          width={14}
+                          height={14}
+                          className="h-3.5 w-3.5 object-contain"
+                        />
+                        <span>{meta.label}</span>
+                      </Badge>
+                    );
+                  })()}
                 </TableCell>
-                <TableCell>
+                <TableCell className="text-muted-foreground text-sm font-medium">
                   {format(new Date(project.createdAt), "MMM d, yyyy")}
                 </TableCell>
                 <TableCell>
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-full overflow-hidden">
-                      <Image
-                        src={project.user.image || "/placeholder.svg"}
-                        alt={project.user.name}
-                        width={32}
-                        height={32}
-                        className="object-cover"
-                      />
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-full overflow-hidden border border-border bg-muted flex items-center justify-center shrink-0">
+                      {project.user?.image ? (
+                        <Image
+                          src={project.user.image}
+                          alt={project.user?.name || "User"}
+                          width={32}
+                          height={32}
+                          className="object-cover h-full w-full"
+                        />
+                      ) : (
+                        <span className="text-xs font-semibold text-muted-foreground">
+                          {(project.user?.name?.[0] || "U").toUpperCase()}
+                        </span>
+                      )}
                     </div>
-                    <span className="text-sm">{project.user.name}</span>
+                    <span className="text-sm font-medium text-foreground">
+                      {project.user?.name || "User"}
+                    </span>
                   </div>
                 </TableCell>
                 <TableCell>
