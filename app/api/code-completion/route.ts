@@ -70,7 +70,7 @@ export async function POST(request: NextRequest) {
 function analyzeCodeContext(
   content: string,
   line: number,
-  coloumn: number,
+  column: number,
   fileName?: string
 ): CodeContext {
   const lines = content.split("\n");
@@ -79,7 +79,7 @@ function analyzeCodeContext(
 
   // Get surrounding context (10 lines before and after)
   const contextRadius = 10;
-  const startLine = Math.max(line - contextRadius);
+  const startLine = Math.max(0, line - contextRadius);
   const endLine = Math.min(lines.length, line + contextRadius);
 
   const beforeContext = lines.slice(startLine, line).join("\n");
@@ -92,8 +92,8 @@ function analyzeCodeContext(
   // Analyze code patterns
   const isInFunction = detectInFunction(lines, line);
   const isInClass = detectInClass(lines, line);
-  const isAfterComment = detectAfterComment(currentLine, coloumn);
-  const incompletePatterns = detectIncompletePatterns(currentLine, coloumn);
+  const isAfterComment = detectAfterComment(currentLine, column);
+  const incompletePatterns = detectIncompletePatterns(currentLine, column);
 
   return {
     language,
@@ -101,7 +101,7 @@ function analyzeCodeContext(
     beforeContext,
     currentLine,
     afterContext,
-    cursorPosition: { line, coloumn },
+    cursorPosition: { line, column },
     isInFunction,
     isInClass,
     isAfterComment,
@@ -259,7 +259,7 @@ function detectIncompletePatterns(line: string, column: number): string[] {
   return patterns;
 }
 
-function getLastNonEmptyLine(lines: string[], currentLine: number): string {
+export function getLastNonEmptyLine(lines: string[], currentLine: number): string {
   for (let i = currentLine - 1; i >= 0; i--) {
     const line = lines[i];
     if (line.trim() !== "") return line;
