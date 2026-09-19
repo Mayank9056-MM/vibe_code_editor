@@ -31,25 +31,23 @@ const AddNewButton = () => {
     <>
       <div
         onClick={() => setIsModalOpen(true)}
-        className="group px-6 py-6 flex flex-row justify-between items-center border rounded-lg bg-muted cursor-pointer 
-        transition-all duration-300 ease-in-out
-        hover:bg-background hover:border-[#E93F3F] hover:scale-[1.02]
-        shadow-[0_2px_10px_rgba(0,0,0,0.08)]
-        hover:shadow-[0_10px_30px_rgba(233,63,63,0.15)]"
+        className="group px-6 py-6 flex flex-row justify-between items-center border border-border rounded-xl bg-card hover:bg-accent/40 cursor-pointer 
+        transition-all duration-200 ease-in-out
+        hover:border-primary/40 hover:shadow-sm"
       >
         <div className="flex flex-row justify-center items-start gap-4">
           <Button
             variant={"outline"}
-            className="flex justify-center items-center bg-white group-hover:bg-[#fff8f8] group-hover:border-[#E93F3F] group-hover:text-[#E93F3F] transition-colors duration-300"
+            className="flex justify-center items-center bg-muted/60 border-border group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-colors duration-200"
             size={"icon"}
           >
             <Plus
-              size={30}
-              className="transition-transform duration-300 group-hover:rotate-90"
+              size={20}
+              className="transition-transform duration-200 group-hover:rotate-90"
             />
           </Button>
           <div className="flex flex-col">
-            <h1 className="text-xl font-bold text-[#e93f3f]">Add New</h1>
+            <h1 className="text-lg font-bold text-foreground group-hover:text-primary transition-colors">Add New</h1>
             <p className="text-sm text-muted-foreground max-w-[220px]">
               Create a new playground
             </p>
