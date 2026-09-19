@@ -1,34 +1,44 @@
-
 "use client";
 
 import { useTheme } from "next-themes";
-import { useEffect , useState } from "react";
-import { Moon, Sun, SunMoon } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Moon, Sun } from "lucide-react";
+import { Button } from "./button";
 
+export function ThemeToggle() {
+  const { setTheme, resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
 
-export function ThemeToggle(){
-    const {setTheme , theme} = useTheme();
-    const [mounted , setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
-    useEffect(() => {
-        setMounted(true);
-    } , []);
-
-    if(!mounted){
-        return null;
-    }
-
+  if (!mounted) {
     return (
-        <div 
-        className="cursor-pointer"
-        onClick={()=>{
-            setTheme(theme === "light" ? "dark" : "light");
-        }}
-        >
-            {
-                theme === "light" ? (<Moon className="h-5 w-5 text-black"/>) : (<Sun className="h-5 w-5 text-white" color="white"/>)
-            }
-        </div>
-    )
-}
+      <Button
+        variant="ghost"
+        size="icon"
+        className="h-9 w-9 rounded-full opacity-0 pointer-events-none"
+        aria-label="Toggle theme"
+      />
+    );
+  }
 
+  const isDark = resolvedTheme === "dark";
+
+  return (
+    <Button
+      variant="ghost"
+      size="icon"
+      className="h-9 w-9 rounded-full transition-colors hover:bg-muted/80 cursor-pointer"
+      onClick={() => setTheme(isDark ? "light" : "dark")}
+      aria-label="Toggle theme"
+    >
+      {isDark ? (
+        <Sun className="h-4 w-4 text-amber-400 transition-transform duration-300 hover:rotate-45" />
+      ) : (
+        <Moon className="h-4 w-4 text-zinc-700 transition-transform duration-300 hover:-rotate-12" />
+      )}
+    </Button>
+  );
+}
