@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useCallback, useState } from "react";
+import { useCallback, useState } from "react";
 
 interface AISuggestionState {
   suggestion: string | null;
@@ -54,7 +54,7 @@ const useAiSuggestion = (): UseAISuggestionReturn => {
           const payload = {
             fileContent: model.getValue(),
             cursorLine: cursorPosition.lineNumber - 1,
-            cursroColumn: cursorPosition.coloumn - 1,
+            cursorColumn: cursorPosition.column - 1,
             suggestionType: type,
           };
 
@@ -79,7 +79,7 @@ const useAiSuggestion = (): UseAISuggestionReturn => {
               suggestion: suggestionText,
               position: {
                 line: cursorPosition.lineNumber,
-                column: cursorPosition.coloumn,
+                column: cursorPosition.column,
               },
               isLoading: false,
             }));
@@ -100,7 +100,7 @@ const useAiSuggestion = (): UseAISuggestionReturn => {
     });
   }, []);
 
-  const acceptSuggestion = useCallback((editor, monaco) => {
+  const acceptSuggestion = useCallback((editor: any, monaco: any) => {
     setState((currentState) => {
       if (
         !currentState.suggestion ||
@@ -141,7 +141,7 @@ const useAiSuggestion = (): UseAISuggestionReturn => {
   const rejectSuggestion = useCallback((editor: any) => {
     setState((currentState) => {
       if (editor && currentState.decoration.length > 0) {
-        editor.deltaDecoration(currentState.decoration, []);
+        editor.deltaDecorations(currentState.decoration, []);
       }
 
       return {
@@ -156,7 +156,7 @@ const useAiSuggestion = (): UseAISuggestionReturn => {
   const clearSuggestion = useCallback((editor: any) => {
     setState((currentState) => {
       if (editor && currentState.decoration.length > 0) {
-        editor.deltaDecoration(currentState.decoration, []);
+        editor.deltaDecorations(currentState.decoration, []);
       }
 
       return {
@@ -168,14 +168,14 @@ const useAiSuggestion = (): UseAISuggestionReturn => {
     });
   }, []);
 
-
   return {
     ...state,
     toggleEnabled,
     fetchSuggestion,
     acceptSuggestion,
-    clearSuggestion
-  }
+    rejectSuggestion,
+    clearSuggestion,
+  };
 
 };
 
