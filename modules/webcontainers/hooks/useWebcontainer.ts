@@ -3,7 +3,7 @@ import { WebContainer } from "@webcontainer/api";
 import { useCallback, useEffect, useState } from "react";
 
 interface UseWebcontainerProps {
-  templateData: TemplateFolder;
+  templateData: TemplateFolder | null;
 }
 
 interface UseWebcontainerReturn {
@@ -16,7 +16,7 @@ interface UseWebcontainerReturn {
 }
 
 export const useWebContainer = ({
-  templateData,
+  templateData: _templateData,
 }: UseWebcontainerProps): UseWebcontainerReturn => {
   const [serverUrl, setServerUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -25,15 +25,19 @@ export const useWebContainer = ({
 
   useEffect(() => {
     let mounted = true;
+    let activeInstance: WebContainer | null = null;
 
     async function initializeWebContainer() {
       try {
         const webContainerInstance = await WebContainer.boot();
 
-        if (!mounted) return;
+        if (!mounted) {
+          webContainerInstance.teardown();
+          return;
+        }
 
+        activeInstance = webContainerInstance;
         setInstance(webContainerInstance);
-
         setIsLoading(false);
       } catch (error) {
         console.error("Failed to initialize WebContainer:", error);
@@ -52,8 +56,8 @@ export const useWebContainer = ({
 
     return () => {
       mounted = false;
-      if (instance) {
-        instance.teardown();
+      if (activeInstance) {
+        activeInstance.teardown();
       }
     };
   }, []);
