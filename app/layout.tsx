@@ -18,11 +18,11 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "VibeCode - AI-Powered Cloud Code Editor",
-    template: "%s | VibeCode",
+    default: "CodeNest - Cloud IDE & Code Editor",
+    template: "%s | CodeNest",
   },
   description:
-    "Next-generation cloud development environment and AI-powered in-browser code editor.",
+    "Next-generation in-browser cloud development environment powered by WebContainers and intelligent code assistance.",
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "any" },
