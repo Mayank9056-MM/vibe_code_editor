@@ -8,7 +8,7 @@ export default function Footer() {
         {/* Brand */}
         <div className="flex items-center gap-2">
           <span className="text-sm font-semibold tracking-tight">
-            VibeCode <span className="text-rose-500">Editor</span>
+            CodeNest <span className="text-primary font-medium">Editor</span>
           </span>
           <span className="text-xs text-muted-foreground">
             • Production-grade Cloud Development
@@ -17,7 +17,7 @@ export default function Footer() {
 
         {/* Copyright */}
         <p className="text-xs text-muted-foreground">
-          &copy; {new Date().getFullYear()} VibeCode Editor. Built for modern engineers.
+          &copy; {new Date().getFullYear()} CodeNest Editor. Built for modern engineers.
         </p>
 
         {/* Social Links */}
